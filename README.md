@@ -1,17 +1,17 @@
 # RealityShaper
 
-A DSL for vending SwiftUI views that allows tthe user to change attributes on a RealityKit `Entity`. 
-
-[![Swift Version][swift-image]][swift-url]
-[![Build Status][travis-image]][travis-url]
 [![License][license-image]][license-url]
-[![codebeat-badge][codebeat-image]][codebeat-url]
+![swift](https://img.shields.io/badge/Swift-5.10%20|%205.9-orange)
+![visionOS](https://img.shields.io/badge/visionOS-blue)
+![iOS](https://img.shields.io/badge/iOS-blue)
 
-One to two paragraph statement about your product and what it does.
+A DSL for vending SwiftUI views that allows the user to change attributes on a RealityKit `Entity`. Enabling a type-safe way of reaching out to RealityKit content with a readable syntax. 
 
-![](header.png)
+![Simulator Screen Recording - Apple Vision Pro - 2024-03-28 at 15 09 05](https://github.com/loomery/RealityShaper/assets/59975039/bf2a2788-ae9c-4254-88a5-90177087b0b6)
 
 ## Installation
+
+### SPM
 
 Add this project on your `Package.swift`
 
@@ -20,19 +20,36 @@ import PackageDescription
 
 let package = Package(
     dependencies: [
-        .Package(url: "https://github.com/user/project.git", majorVersion: 0, minor: 0)
+        .Package(url: "https://github.com/loomery/RealityShaper.git", majorVersion: 0, minor: 0)
     ]
 )
 ```
 
 ## Usage example
 
+Conform your Entity model to the `EntityRepresentable` protocol and setup the `init` as follows:
 
 ```swift
-import Project
-let proj = Class(param: String?)
-proj.run()
+import RealityShaper
+
+struct ShowroomCar: EntityRepresentable {
+    let name: String
+    var entity: RealityKit.Entity
+    var subEntities: [Library.Entity]
+    
+    init(named name: String, @EntityBuilder subEntities: () async -> [Library.Entity]) async throws {
+        self.name = name
+        let entity = try await RealityKit.Entity(named: name, in: realityKitContentBundle)
+        
+        self.subEntities = await subEntities().map {
+            $0.withEntity(entity)
+        }
+        self.entity = entity
+    }
+}
 ```
+
+The package comes the a `resultBuilder` called `EntityBuilder` that allows you to define the sub entities of 
 
 
 ## Development setup
@@ -64,7 +81,7 @@ Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@examp
 
 Distributed under the XYZ license. See ``LICENSE`` for more information.
 
-[https://github.com/yourname/github-link](https://github.com/dbader/)
+[https://github.com/yourname/github-link](https://github.com/dbader/) 
 
 [swift-image]:https://img.shields.io/badge/swift-3.0-orange.svg
 [swift-url]: https://swift.org/
