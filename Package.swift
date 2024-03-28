@@ -4,16 +4,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "RealityShaper",
+    name: "Polymorph",
     platforms: [
         .visionOS(.v1),
         .iOS(.v15),
     ],
     products: [
-        .library(name: "RealityShaper", targets: ["RealityShaper"])
+        .library(name: "Polymorph", targets: ["Polymorph"])
     ],
     targets: [
-        .target(name: "RealityShaper"),
-        .testTarget(name: "RealityShaperTests", dependencies: ["RealityShaper"]),
+        .target(name: "Polymorph"),
+        .testTarget(name: "PolymorphTests", dependencies: ["Polymorph"]),
     ]
 )

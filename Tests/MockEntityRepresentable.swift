@@ -1,10 +1,10 @@
-import RealityShaper
+import Polymorph
 
 struct MockEntityRepresentable: EntityRepresentable {
     
     let name: String
     var entity: Entity
-    var subEntities: [RealityShaper.Library.Entity]
+    var subEntities: [Polymorph.Library.Entity]
     
     init(named name: String = "Box", @EntityBuilder subEntities: () async -> [Library.Entity]) async throws {
         let boxMesh = await MeshResource.generateBox(size: 0.1)

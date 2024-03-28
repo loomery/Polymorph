@@ -1,5 +1,5 @@
 import XCTest
-@testable import RealityShaper
+@testable import Polymorph
 
 final class RealityShaperTests: XCTestCase {
 
