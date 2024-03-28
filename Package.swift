@@ -4,5 +4,16 @@
 import PackageDescription
 
 let package = Package(
-    name: "RealityShaper"
+    name: "RealityShaper",
+    platforms: [
+        .visionOS(.v1),
+        .iOS(.v15),
+    ],
+    products: [
+        .library(name: "RealityShaper", targets: ["RealityShaper"])
+    ],
+    targets: [
+        .target(name: "RealityShaper"),
+        .testTarget(name: "RealityShaperTests", dependencies: ["RealityShaper"]),
+    ]
 )
