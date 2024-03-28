@@ -30,7 +30,7 @@ let package = Package(
 Conform your Entity model to the `EntityRepresentable` protocol and setup the `init` as follows:
 
 ```swift
-import RealityShaper
+import Polymorph
 
 struct ShowroomCar: EntityRepresentable {
     let name: String
@@ -49,45 +49,69 @@ struct ShowroomCar: EntityRepresentable {
 }
 ```
 
-The package comes the a `resultBuilder` called `EntityBuilder` that allows you to define the sub entities of 
+The package comes with a `resultBuilder` called `EntityBuilder` that allows you to define the sub entities that are bound to the materials in Reality Composer Pro:
 
+<img width="302" alt="Screenshot 2024-03-28 at 16 05 20" src="https://github.com/loomery/Polymorph/assets/59975039/a86e53aa-fb9d-41a9-ac7d-790ee8a531e6">
 
-## Development setup
-
-Describe how to install all development dependencies and how to run an automated test-suite of some kind. Potentially do this for multiple platforms.
-
-```sh
-make install
+```swift
+extension ShowroomCar {
+    static var p1: () async -> Self = {
+        try await ShopItem(named: "P1") {
+            Library.Entity(named: "Paintjob") {
+                Library.Color(name: "Paintjob")
+            }
+            Library.Entity(named: "Interior") {
+                Library.Color(name: "Interior")
+            }
+            Library.Entity(named: "Seats") {
+                Library.Color(name: "Seats")
+            }
+            Library.Entity(named: "Rims") {
+                Library.Color(name: "Rims")
+            }
+        }
+    }
+}
 ```
+
+Then you can load in the entity into the immersive space:
+
+```swift
+RealityView {
+    subscriptions.append(content.subscribe(
+        to: ComponentEvents.DidAdd.self,
+        componentType: CustomizableItemComponent.self
+    ) { event in
+        let car = await ShowroomCar.p1()
+        await event.entity.children.append(car.entity)
+    })
+} ...
+```
+
+And add the SwiftUI views to the window:
+
+```swift
+ScrollView {
+    VStack {
+        Text("Customise your item.")
+        ForEach(showroomCar.attributes) { attribute in
+            attribute
+        }
+    }
+}
+```
+
+<img width="536" alt="Screenshot 2024-03-28 at 16 07 52" src="https://github.com/loomery/Polymorph/assets/59975039/816b2baa-06bd-4e1a-8a2b-9440e20e0b26">
 
 ## Release History
 
-* 0.2.1
-    * CHANGE: Update docs (module code remains unchanged)
-* 0.2.0
-    * CHANGE: Remove `setDefaultXYZ()`
-    * ADD: Add `init()`
-* 0.1.1
-    * FIX: Crash when calling `baz()` (Thanks @GenerousContributorName!)
-* 0.1.0
-    * The first proper release
-    * CHANGE: Rename `foo()` to `bar()`
 * 0.0.1
     * Work in progress
 
 ## Meta
 
-Your Name – [@YourTwitter](https://twitter.com/dbader_org) – YourEmail@example.com
+Tom Holmes – [@tommy_holmes_](https://twitter.com/tommy_holmes_) – tom@loomery.com
 
-Distributed under the XYZ license. See ``LICENSE`` for more information.
+Distributed under the MIT license. See ``LICENSE`` for more information.
 
-[https://github.com/yourname/github-link](https://github.com/dbader/) 
-
-[swift-image]:https://img.shields.io/badge/swift-3.0-orange.svg
-[swift-url]: https://swift.org/
-[license-image]: https://img.shields.io/badge/License-MIT-blue.svg
-[license-url]: LICENSE
-[travis-image]: https://img.shields.io/travis/dbader/node-datadog-metrics/master.svg
-[travis-url]: https://travis-ci.org/dbader/node-datadog-metrics
-[codebeat-image]: https://codebeat.co/badges/c19b47ea-2f9d-45df-8458-b2d952fe9dad
-[codebeat-url]: https://codebeat.co/projects/github-com-vsouza-awesomeios-com
+[Tom Holmes GitHub](https://github.com/tommy-holmes/) 
