@@ -27,7 +27,7 @@ extension EntityAttribute {
 }
 
 extension EntityAttribute {
-    var id: String { String(describing: self) }
+    public var id: String { String(describing: self) }
 }
 
 /// A type-erased version of `EntityAttribute` for 
@@ -58,15 +58,22 @@ struct AnyEntityAttribute: EntityAttribute {
     }
 }
 
-extension Library {
+public extension Library {
     struct Color: EntityAttribute {
-        var entity: RealityKit.Entity?
-        var name: String = ""
-        var geoSubsetIndex: Int = 0
+        
+        public var entity: RealityKit.Entity?
+        public var name: String = ""
+        public var geoSubsetIndex: Int
+        
+        public init(entity: RealityKit.Entity? = nil, name: String = "", geoSubsetIndex: Int = 0) {
+            self.entity = entity
+            self.name = name
+            self.geoSubsetIndex = geoSubsetIndex
+        }
         
         private let parameterName = "Color"
         
-        var value: SwiftUI.Color {
+        public var value: SwiftUI.Color {
             get {
                 guard
                     let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
@@ -89,7 +96,7 @@ extension Library {
             }
         }
         
-        var body: some View {
+        public var body: some View {
             ColorPicker(name, selection: projectedValue)
         }
     }
