@@ -103,11 +103,6 @@ ScrollView {
 
 <img width="536" alt="Screenshot 2024-03-28 at 16 07 52" src="https://github.com/loomery/Polymorph/assets/59975039/816b2baa-06bd-4e1a-8a2b-9440e20e0b26">
 
-## Release History
-
-* 0.0.1
-    * Work in progress
-
 ## Meta
 
 Tom Holmes – [@tommy_holmes_](https://twitter.com/tommy_holmes_) – tom@loomery.com
