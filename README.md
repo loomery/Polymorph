@@ -56,7 +56,7 @@ The package comes with a `resultBuilder` called `EntityBuilder` that allows you 
 ```swift
 extension ShowroomCar {
     static var p1: () async -> Self = {
-        try await ShopItem(named: "P1") {
+        try await ShowroomCar(named: "P1") {
             Library.Entity(named: "Paintjob") {
                 Library.Color(name: "Paintjob")
             }
