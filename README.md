@@ -20,7 +20,7 @@ import PackageDescription
 
 let package = Package(
     dependencies: [
-        .Package(url: "https://github.com/loomery/RealityShaper.git", majorVersion: 0, minor: 0)
+        .Package(url: "https://github.com/loomery/Polymorph.git", majorVersion: 0, minor: 0)
     ]
 )
 ```
