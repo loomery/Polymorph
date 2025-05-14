@@ -4,7 +4,7 @@ import RealityKit
 public struct Library { }
 
 public extension Library {
-    struct Entity {
+    struct Entity: Sendable {
         fileprivate var entity: RealityKit.Entity?
         let name: String
         var attributes: [any EntityAttribute]
