@@ -37,3 +37,114 @@ public extension Library {
         }
     }
 }
+
+public extension Library {
+    /// Get the parameter value for a given name and entity.
+    /// - Parameters:
+    ///   - name: The name of the parameter.
+    ///   - entity: The entity to get the parameter from.
+    ///   - geoSubsetIndex: The index of the geometry subset.
+    ///   - Returns: The parameter value, or nil if not found.
+    ///   - Note: This function is generic and can be used to get different types of parameters.
+    ///   - Example:
+    ///     ```swift
+    ///     let color: CGColor? = getParameter(named: "Color", for: entity, atSubsetIndex: 0)
+    ///     ```
+    ///     - Use caution when casting to the expected type.
+    ///     - Note: This function is not thread-safe and should be called on the main thread.
+    static func getParameter<T: Sendable>(
+        named name: String,
+        for entity: RealityKit.Entity?,
+        atSubsetIndex geoSubsetIndex: Array.Index
+    ) -> T? {
+        guard
+            let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
+            material.hasMaterialParameter(named: name)
+        else { return nil }
+        
+        guard case .color(let value) = material.getParameter(name: name) else { return nil }
+        return value as? T
+    }
+    /// Get the parameter value for a given name and entity asynchronously.
+    /// - Parameters:
+    ///  - name: The name of the parameter.
+    ///  - entity: The entity to get the parameter from.
+    ///  - geoSubsetIndex: The index of the geometry subset.
+    ///  - Returns: The parameter value, or nil if not found.
+    ///  - Note: This function is generic and can be used to get different types of parameters.
+    ///  - Example:
+    ///   ```swift
+    ///   let color: CGColor? = await getParameter(named: "Color", for: entity, atSubsetIndex: 0)
+    ///   ```
+    static func getParameter<T: Sendable>(
+        named name: String,
+        for entity: RealityKit.Entity?,
+        atSubsetIndex geoSubsetIndex: Array.Index
+    ) async -> T? {
+        guard
+            let material = await entity?.shaderGraphMaterial(at: geoSubsetIndex),
+            material.hasMaterialParameter(named: name)
+        else { return nil }
+        
+        guard case .color(let value) = material.getParameter(name: name) else { return nil }
+        return value as? T
+    }
+    /// Set the parameter value for a given name and entity.
+    /// - Parameters:
+    ///  - name: The name of the parameter.
+    ///  - value: The value to set.
+    ///  - entity: The entity to set the parameter on.
+    ///  - geoSubsetIndex: The index of the geometry subset.
+    ///  - Throws: An error if the parameter cannot be set.
+    ///  - Note: This function is generic and can be used to set different types of parameters.
+    ///  - Example:
+    ///   ```swift
+    ///   let color: Color = .red
+    ///   setParameter(named: "Color", value: .color(color), for: entity, atSubsetIndex: 0)
+    ///   ```
+    ///   - Use caution when casting to the expected type.
+    ///   - Warning: This function may throw an error if the parameter cannot be set.
+    static func setParameter(
+        named name: String,
+        value: MaterialParameters.Value,
+        for entity: RealityKit.Entity?,
+        atSubsetIndex geoSubsetIndex: Array.Index
+    ) throws {
+        guard
+            let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
+            material.hasMaterialParameter(named: name)
+        else { return }
+        
+        try entity?.update(shaderGraphMaterial: material, geoSubsetIndex: geoSubsetIndex) { mat in
+            try mat.setParameter(name: name, value: value)
+        }
+    }
+    /// Set the parameter value for a given name and entity asynchronously.
+    /// - Parameters:
+    /// - name: The name of the parameter.
+    /// - value: The value to set.
+    /// - entity: The entity to set the parameter on.
+    /// - geoSubsetIndex: The index of the geometry subset.
+    /// - Throws: An error if the parameter cannot be set.
+    /// - Note: This function is generic and can be used to set different types of parameters.
+    /// - Example:
+    /// ```swift
+    /// let color: Color = .red
+    /// await setParameter(named: "Color", value: .color(color), for: entity, atSubsetIndex: 0)
+    /// ```
+    static func setParameter(
+        named name: String,
+        value: MaterialParameters.Value,
+        for entity: RealityKit.Entity?,
+        atSubsetIndex geoSubsetIndex: Array.Index
+    ) async throws {
+        guard
+            let material = await entity?.shaderGraphMaterial(at: geoSubsetIndex),
+            material.hasMaterialParameter(named: name)
+        else { return }
+        
+        try await entity?.update(shaderGraphMaterial: material, geoSubsetIndex: geoSubsetIndex) { mat in
+            try mat.setParameter(name: name, value: value)
+        }
+    }
+}
