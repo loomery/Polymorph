@@ -6,7 +6,7 @@ import RealityKit
 /// - parameter entity: The underlying RealityKit `Enitiy`
 /// - parameter name: The name of the attribute
 /// - parameter value: The wrapped value of the attribute
-public protocol EntityAttribute: View, Identifiable {
+public protocol EntityAttribute: View, Identifiable, Sendable {
     associatedtype Value: Hashable
     
     var entity: RealityKit.Entity? { get set }
@@ -15,7 +15,7 @@ public protocol EntityAttribute: View, Identifiable {
 }
 
 extension EntityAttribute {
-    var projectedValue: Binding<Value> {
+    public var projectedValue: Binding<Value> {
         .init(get: { value }, set: { value = $0 })
     }
     
@@ -55,56 +55,5 @@ struct AnyEntityAttribute: EntityAttribute {
         _body = { .init(attribute.body) }
         entity = attribute.entity
         name = attribute.name
-    }
-}
-
-public extension Library {
-    struct Color: EntityAttribute {
-        
-        public var entity: RealityKit.Entity?
-        public let name: String
-        public var geoSubsetIndex: Array.Index
-        
-        /// Creates a new `Color` attribute.
-        /// - Parameters:
-        /// - entity: The underlying RealityKit `Entity`.
-        /// - name: The user facing name of the attribute for the UI.
-        /// - geoSubsetIndex: The index of the geometry subset.
-        /// - Example:
-        /// ```swift
-        /// Library.Entity(named: "hood_car_paint") {
-        ///     Library.Color(name: "Hood paint")
-        /// }
-        /// ```
-        public init(entity: RealityKit.Entity? = nil, name: String = "", geoSubsetIndex: Array.Index = 0) {
-            self.entity = entity
-            self.name = name
-            self.geoSubsetIndex = geoSubsetIndex
-        }
-        
-        private let parameterName = "Color"
-        
-        public var value: SwiftUI.Color {
-            get {
-                guard let color: CGColor = getParameter(named: parameterName,
-                                                        for: entity,
-                                                        atSubsetIndex: geoSubsetIndex)
-                else { return .primary }
-                return SwiftUI.Color(cgColor: color)
-            }
-            nonmutating set {
-                try! setParameter(named: parameterName,
-                                  value: .color(UIColor(newValue)),
-                                  for: entity,
-                                  atSubsetIndex: geoSubsetIndex)
-            }
-        }
-        
-        /// The body of the `Color` attribute.
-        /// - Returns: A `ColorPicker` view that allows the user to select a color.
-        /// - Note: This view is used to display and modify the color attribute.
-        public var body: some View {
-            ColorPicker(name, selection: projectedValue)
-        }
     }
 }
