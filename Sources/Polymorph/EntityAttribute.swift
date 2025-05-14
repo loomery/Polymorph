@@ -7,7 +7,7 @@ import RealityKit
 /// - parameter name: The name of the attribute
 /// - parameter value: The wrapped value of the attribute
 public protocol EntityAttribute: View, Identifiable, Sendable {
-    associatedtype Value: Hashable, Sendable
+    associatedtype Value: Hashable
     
     var entity: RealityKit.Entity? { get set }
     var name: String { get }
@@ -57,5 +57,3 @@ struct AnyEntityAttribute: EntityAttribute {
         name = attribute.name
     }
 }
-
-extension AnyHashable: @unchecked @retroactive Sendable { }
