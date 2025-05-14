@@ -59,6 +59,28 @@ struct AnyEntityAttribute: EntityAttribute {
 }
 
 public extension Library {
+    static func getParameter<T>(named name: String, for entity: RealityKit.Entity?, at geoSubsetIndex: Int) -> T? {
+        guard
+            let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
+            material.hasMaterialParameter(named: name)
+        else { return nil }
+        
+        guard case .color(let value) = material.getParameter(name: name) else { return nil }
+        return value as? T
+    }
+    static func setParameter(named name: String, value: MaterialParameters.Value, for entity: RealityKit.Entity?, at geoSubsetIndex: Int) throws {
+        guard
+            let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
+            material.hasMaterialParameter(named: name)
+        else { return }
+        
+        try entity?.update(shaderGraphMaterial: material, geoSubsetIndex: geoSubsetIndex) { mat in
+            try mat.setParameter(name: name, value: value)
+        }
+    }
+}
+
+public extension Library {
     struct Color: EntityAttribute {
         
         public var entity: RealityKit.Entity?
@@ -75,24 +97,12 @@ public extension Library {
         
         public var value: SwiftUI.Color {
             get {
-                guard
-                    let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
-                    material.hasMaterialParameter(named: parameterName)
+                guard let color: CGColor = getParameter(named: parameterName, for: entity, at: geoSubsetIndex)
                 else { return .primary }
-                
-                guard case .color(let value) = material.getParameter(name: parameterName) else { return .primary }
-                return SwiftUI.Color(cgColor: value)
+                return SwiftUI.Color(cgColor: color)
             }
-            
             nonmutating set {
-                guard
-                    let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
-                    material.hasMaterialParameter(named: parameterName)
-                else { return }
-                
-                entity?.update(shaderGraphMaterial: material, geoSubsetIndex: geoSubsetIndex) { mat in
-                    try! mat.setParameter(name: parameterName, value: .color(UIColor(newValue)))
-                }
+                try! setParameter(named: parameterName, value: .color(UIColor(newValue)), for: entity, at: geoSubsetIndex)
             }
         }
         
