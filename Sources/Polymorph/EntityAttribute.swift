@@ -6,12 +6,12 @@ import RealityKit
 /// - parameter entity: The underlying RealityKit `Enitiy`
 /// - parameter name: The name of the attribute
 /// - parameter value: The wrapped value of the attribute
-public protocol EntityAttribute: View, Identifiable, Sendable {
+public protocol EntityAttribute: View, Identifiable, Copyable, Sendable {
     associatedtype Value: Hashable
     
     var entity: RealityKit.Entity? { get set }
     var name: String { get }
-    nonisolated var value: Value { get nonmutating set }
+    var value: Value { get nonmutating set }
 }
 
 extension EntityAttribute {
