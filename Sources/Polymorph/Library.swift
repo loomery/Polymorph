@@ -62,8 +62,21 @@ public extension Library {
             material.hasMaterialParameter(named: name)
         else { return nil }
         
-        guard case .color(let value) = material.getParameter(name: name) else { return nil }
-        return value as? T
+        switch material.getParameter(name: name) {
+        case let .color(value): return value as? T
+        case let .bool(value): return value as? T
+        case let .float(value): return value as? T
+        case let .int(value): return value as? T
+        case let .float2x2(value): return value as? T
+        case let .float3x3(value): return value as? T
+        case let .float4x4(value): return value as? T
+        case let .texture(value): return value as? T
+        case let .textureResource(value): return value as? T
+        case let .simd2Float(value): return value as? T
+        case let .simd3Float(value): return value as? T
+        case let .simd4Float(value): return value as? T
+        default: return nil
+        }
     }
     /// Get the parameter value for a given name and entity asynchronously.
     /// - Parameters:
@@ -86,8 +99,21 @@ public extension Library {
             material.hasMaterialParameter(named: name)
         else { return nil }
         
-        guard case .color(let value) = material.getParameter(name: name) else { return nil }
-        return value as? T
+        switch material.getParameter(name: name) {
+        case let .color(value): return value as? T
+        case let .bool(value): return value as? T
+        case let .float(value): return value as? T
+        case let .int(value): return value as? T
+        case let .float2x2(value): return value as? T
+        case let .float3x3(value): return value as? T
+        case let .float4x4(value): return value as? T
+        case let .texture(value): return value as? T
+        case let .textureResource(value): return value as? T
+        case let .simd2Float(value): return value as? T
+        case let .simd3Float(value): return value as? T
+        case let .simd4Float(value): return value as? T
+        default: return nil
+        }
     }
     /// Set the parameter value for a given name and entity.
     /// - Parameters:
