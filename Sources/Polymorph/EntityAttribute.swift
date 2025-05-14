@@ -6,16 +6,16 @@ import RealityKit
 /// - parameter entity: The underlying RealityKit `Enitiy`
 /// - parameter name: The name of the attribute
 /// - parameter value: The wrapped value of the attribute
-public protocol EntityAttribute: View, Identifiable {
+public protocol EntityAttribute: View, Identifiable, Sendable {
     associatedtype Value: Hashable
     
     var entity: RealityKit.Entity? { get set }
     var name: String { get }
-    var value: Value { get nonmutating set }
+    nonisolated var value: Value { get nonmutating set }
 }
 
 extension EntityAttribute {
-    var projectedValue: Binding<Value> {
+    public var projectedValue: Binding<Value> {
         .init(get: { value }, set: { value = $0 })
     }
     
@@ -55,49 +55,5 @@ struct AnyEntityAttribute: EntityAttribute {
         _body = { .init(attribute.body) }
         entity = attribute.entity
         name = attribute.name
-    }
-}
-
-public extension Library {
-    struct Color: EntityAttribute {
-        
-        public var entity: RealityKit.Entity?
-        public var name: String = ""
-        public var geoSubsetIndex: Int
-        
-        public init(entity: RealityKit.Entity? = nil, name: String = "", geoSubsetIndex: Int = 0) {
-            self.entity = entity
-            self.name = name
-            self.geoSubsetIndex = geoSubsetIndex
-        }
-        
-        private let parameterName = "Color"
-        
-        public var value: SwiftUI.Color {
-            get {
-                guard
-                    let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
-                    material.hasMaterialParameter(named: parameterName)
-                else { return .primary }
-                
-                guard case .color(let value) = material.getParameter(name: parameterName) else { return .primary }
-                return SwiftUI.Color(cgColor: value)
-            }
-            
-            nonmutating set {
-                guard
-                    let material = entity?.shaderGraphMaterial(at: geoSubsetIndex),
-                    material.hasMaterialParameter(named: parameterName)
-                else { return }
-                
-                entity?.update(shaderGraphMaterial: material, geoSubsetIndex: geoSubsetIndex) { mat in
-                    try! mat.setParameter(name: parameterName, value: .color(UIColor(newValue)))
-                }
-            }
-        }
-        
-        public var body: some View {
-            ColorPicker(name, selection: projectedValue)
-        }
     }
 }

@@ -8,21 +8,65 @@
 A DSL for vending SwiftUI views that allows the user to change attributes on a RealityKit `Entity`. Enabling a type-safe way of reaching out to RealityKit content with a readable syntax. 
 
 ![Simulator Screen Recording - Apple Vision Pro - 2024-03-28 at 15 09 05](https://github.com/loomery/RealityShaper/assets/59975039/bf2a2788-ae9c-4254-88a5-90177087b0b6)
+                                                                          
+## Creating attributes
 
-## Installation
+To add your own attributes like reaching out to a shader input called "Color" in the shader graph that expects a `Color` value you can extend `Library` with a new value type and confrom it to `EntityAttribute`. 
 
-### SPM
-
-Add this project on your `Package.swift`
+Then in the `body` you can make the SwiftUI view that mutates the attribute. 
 
 ```swift
-import PackageDescription
-
-let package = Package(
-    dependencies: [
-        .Package(url: "https://github.com/loomery/Polymorph.git", majorVersion: 0, minor: 1)
-    ]
-)
+public extension Library {
+    struct Color: EntityAttribute {
+        
+        public var entity: RealityKit.Entity?
+        public let name: String
+        public var geoSubsetIndex: Array.Index
+        
+        /// Creates a new `Color` attribute.
+        /// - Parameters:
+        /// - entity: The underlying RealityKit `Entity`.
+        /// - name: The user facing name of the attribute for the UI.
+        /// - geoSubsetIndex: The index of the geometry subset.
+        /// - Example:
+        /// ```swift
+        /// // Inside an EntityBuilder:
+        /// Library.Entity(named: "hood_car_paint") {
+        ///     Library.Color(name: "Hood paint")
+        /// }
+        /// ```
+        public init(entity: RealityKit.Entity? = nil, name: String = "", geoSubsetIndex: Array.Index = 0) {
+            self.entity = entity
+            self.name = name
+            self.geoSubsetIndex = geoSubsetIndex
+        }
+        
+        private let parameterName = "Color"
+        
+        public var value: SwiftUI.Color {
+            get {
+                guard let color: CGColor = getParameter(named: parameterName,
+                                                        for: entity,
+                                                        atSubsetIndex: geoSubsetIndex)
+                else { return .primary }
+                return SwiftUI.Color(cgColor: color)
+            }
+            nonmutating set {
+                try! setParameter(named: parameterName,
+                                  value: .color(UIColor(newValue)),
+                                  for: entity,
+                                  atSubsetIndex: geoSubsetIndex)
+            }
+        }
+        
+        /// The body of the `Color` attribute.
+        /// - Returns: A `ColorPicker` view that allows the user to select a color.
+        /// - Note: This view is used to display and modify the color attribute.
+        public var body: some View {
+            ColorPicker(name, selection: projectedValue)
+        }
+    }
+}
 ```
 
 ## Usage example
@@ -102,6 +146,22 @@ ScrollView {
 ```
 
 <img width="536" alt="Screenshot 2024-03-28 at 16 07 52" src="https://github.com/loomery/Polymorph/assets/59975039/816b2baa-06bd-4e1a-8a2b-9440e20e0b26">
+
+## Installation
+
+### SPM
+
+Add this project on your `Package.swift`
+
+```swift
+import PackageDescription
+
+let package = Package(
+    dependencies: [
+        .Package(url: "https://github.com/loomery/Polymorph.git", majorVersion: 0, minor: 1)
+    ]
+)
+```
 
 ## Meta
 
