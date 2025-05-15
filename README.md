@@ -1,7 +1,7 @@
 # Polymorph
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-![swift](https://img.shields.io/badge/Swift-6.1%20|%206.0-orange)
+![swift](https://img.shields.io/badge/Swift-6.1%20|%205.10-orange)
 ![visionOS](https://img.shields.io/badge/visionOS-blue)
 ![iOS](https://img.shields.io/badge/iOS-blue)
 
